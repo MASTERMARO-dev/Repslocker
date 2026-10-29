@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>REPLOCK — Earn Your Time</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{color-scheme:dark;--bg:#0b0d10;--panel:#14181e;--muted:#9aa4b1;--line:#28303a;--lime:#c5ff4a;--red:#ff7474}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#27341b 0%,#0b0d10 52%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f6f8fa;min-height:100vh;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom)}
+main{max-width:560px;margin:auto;padding:15px 0 35px}.top{display:flex;align-items:center;justify-content:space-between;margin:8px 0 28px}.brand{font-weight:950;letter-spacing:2px;font-size:17px}.brand span{color:var(--lime)}.pill{font-size:10px;letter-spacing:1px;border:1px solid #42502d;color:var(--lime);border-radius:99px;padding:8px 10px}
+h1{font-size:clamp(36px,10vw,48px);letter-spacing:-2px;line-height:.98;margin:0 0 12px}h1 em{font-style:normal;color:var(--lime)}.sub{font-size:14px;line-height:1.55;color:var(--muted);margin:0 0 22px}
+.panel{background:linear-gradient(145deg,#181e25,#111419);border:1px solid var(--line);border-radius:23px;padding:18px;margin:13px 0}.eyebrow{font-size:11px;color:var(--muted);letter-spacing:1px;display:flex;justify-content:space-between;gap:10px}.countrow{display:flex;align-items:baseline;gap:9px;margin:13px 0 8px}.count{font-size:76px;font-weight:900;letter-spacing:-5px;line-height:1}.countrow small{color:var(--muted);font-size:16px}.bar{height:8px;border-radius:99px;background:#303741;overflow:hidden;margin:15px 0}.bar div{height:100%;background:var(--lime);width:0%;transition:width .2s}.spread{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted)}.spread strong{color:#fff;font-size:13px}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:13px 0}.btn{border:0;border-radius:14px;padding:15px 12px;font-size:14px;font-weight:850;cursor:pointer}.primary{background:var(--lime);color:#111609}.secondary{background:#20262e;color:#fff;border:1px solid #323b46}.btn:disabled{opacity:.4;cursor:not-allowed}.panel h2{font-size:16px;margin:0 0 12px}.muted{font-size:12px;line-height:1.55;color:var(--muted)}.camera{position:relative;background:#050607;aspect-ratio:4/3;overflow:hidden;border-radius:16px;margin:12px 0}.camera video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}.camera canvas{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1)}.camtag{position:absolute;top:10px;left:10px;background:#000a;border-radius:8px;padding:7px 9px;font-size:10px;letter-spacing:.7px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{background:#1b2128;border-radius:13px;padding:12px}.stat span{display:block;font-size:11px;color:var(--muted);margin-bottom:6px}.stat strong{font-size:21px}.status{font-size:13px;line-height:1.45;color:var(--muted);min-height:20px}label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}input[type=number]{width:100%;background:#0c0f13;color:white;border:1px solid #303944;border-radius:12px;padding:12px;font-size:16px}.checkrow{display:flex;gap:9px;align-items:center;margin-top:15px}.checkrow input{accent-color:var(--lime)}.checkrow label{margin:0}.notice{background:#292315;border:1px solid #62522b;border-radius:14px;padding:13px;color:#f6d98b;font-size:12px;line-height:1.55;margin:14px 0}.notice strong{color:#ffe6a3}.hidden{display:none!important}footer{text-align:center;color:#707b89;font-size:11px;padding:22px 0}
+</style>
+</head>
+<body>
+<main>
+ <div class="top"><div class="brand">REP<span>LOCK</span></div><div class="pill">FITNESS REWARD SYSTEM</div></div>
+ <h1>Earn your<br><em>screen time.</em></h1>
+ <p class="sub">Complete real push-ups. Earn minutes. Build consistency one rep at a time.</p>
+
+ <section class="panel">
+  <div class="eyebrow"><span>YOUR CHALLENGE</span><span id="challengeState">READY</span></div>
+  <div class="countrow"><div class="count" id="repCount">0</div><small>/ <b id="targetLabel">10</b> reps</small></div>
+  <div class="bar"><div id="progressBar"></div></div>
+  <div class="spread"><span>Earned this challenge</span><strong id="earned">+0 min</strong></div>
+  <div class="spread" style="margin-top:8px"><span>Your saved time balance</span><strong id="balance">0 min</strong></div>
+  <div class="buttons"><button class="btn primary" id="startBtn">Start camera</button><button class="btn secondary" id="stopBtn" disabled>Stop camera</button></div>
+  <p class="muted" style="margin-bottom:0">Use a side view with shoulders, elbows, hips and legs visible. The camera only starts after you tap Start.</p>
+ </section>
+
+ <section class="panel hidden" id="cameraPanel">
+  <h2>Live pose detection</h2>
+  <div class="camera"><video id="video" playsinline muted></video><canvas id="overlay"></canvas><div class="camtag" id="camtag">CAMERA OFF</div></div>
+  <div class="status" id="status">Position yourself side-on to the camera.</div>
+  <div class="stats" style="margin-top:12px"><div class="stat"><span>Elbow angle</span><strong id="angle">—°</strong></div><div class="stat"><span>Movement phase</span><strong id="phase">Ready</strong></div></div>
+  <p class="muted">Rep counting uses shoulder, elbow and wrist landmarks. It looks for a bent elbow followed by a near-straight elbow. It is an estimate, not a medical-grade form assessment.</p>
+ </section>
+
+ <section class="panel">
+  <h2>Reward rules</h2>
+  <div class="stats"><div class="stat"><span>Target</span><strong id="goalStat">10 reps</strong></div><div class="stat"><span>Reward rate</span><strong id="rateStat">2 min / rep</strong></div></div>
+  <p class="muted" style="margin-bottom:0">Credits are stored in this browser. They do not unlock or restrict iPhone apps.</p>
+ </section>
+
+ <section class="panel">
+  <h2>Customize</h2>
+  <label for="targetInput">Push-ups per challenge</label><input id="targetInput" type="number" min="1" max="100" value="10">
+  <label for="rateInput">Minutes earned per valid rep</label><input id="rateInput" type="number" min="1" max="30" value="2">
+  <label for="capInput">Maximum minutes earned per challenge</label><input id="capInput" type="number" min="1" max="240" value="30">
+  <label for="intervalInput">Reminder interval (hours)</label><input id="intervalInput" type="number" min="1" max="12" value="1">
+  <div class="checkrow"><input type="checkbox" id="reminders"><label for="reminders">Enable reminders while app is open</label></div>
+  <div class="buttons"><button class="btn primary" id="saveBtn">Save settings</button><button class="btn secondary" id="notifyBtn">Enable alerts</button></div>
+  <p class="muted" id="reminderStatus" style="margin-bottom:0">Reminders are off.</p>
+ </section>
+ <div class="notice"><strong>Honest iPhone limitation:</strong> Safari websites cannot lock the whole phone, replace the passcode screen, or block other apps. Hourly timers may pause when Safari is backgrounded. This web app preserves emergency access because it does not control the system lock screen.</div>
+ <footer>REPLOCK · Prototype · Camera processing runs in your browser; this app has no code to upload camera frames.</footer>
+</main>
+<script type="module">
+import { PoseLandmarker, FilesetResolver, DrawingUtils } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+const $=id=>document.getElementById(id), video=$("video"), canvas=$("overlay"), ctx=canvas.getContext("2d");
+const KEY="replock_web_v1";
+let cfg={target:10,rate:2,cap:30,interval:1,reminders:false}, reps=0,earned=0,balance=0,model=null,stream=null,raf=0,phase="up",lastRep=0,lastReminder=Date.now();
+try{const saved=JSON.parse(localStorage.getItem(KEY)||"{}");cfg={...cfg,...saved.cfg};balance=saved.balance||0;}catch{}
+function persist(){localStorage.setItem(KEY,JSON.stringify({cfg,balance}));}
+function ui(){$("repCount").textContent=reps;$("targetLabel").textContent=cfg.target;$("progressBar").style.width=Math.min(100,reps/cfg.target*100)+"%";$("earned").textContent="+"+earned+" min";$("balance").textContent=balance+" min";$("goalStat").textContent=cfg.target+" reps";$("rateStat").textContent=cfg.rate+" min / rep";$("challengeState").textContent=reps>=cfg.target?"COMPLETE":"READY";}
+function loadSettings(){$("targetInput").value=cfg.target;$("rateInput").value=cfg.rate;$("capInput").value=cfg.cap;$("intervalInput").value=cfg.interval;$("reminders").checked=cfg.reminders;ui();}
+function int(id,min,max,def){const n=Number($(id).value);return Number.isFinite(n)?Math.max(min,Math.min(max,Math.round(n))):def;}
+$("saveBtn").onclick=()=>{cfg={target:int("targetInput",1,100,10),rate:int("rateInput",1,30,2),cap:int("capInput",1,240,30),interval:int("intervalInput",1,12,1),reminders:$("reminders").checked};persist();loadSettings();$("reminderStatus").textContent=cfg.reminders?"Reminder timer active while this page remains open.":"Reminders are off.";};
+$("notifyBtn").onclick=async()=>{if(!("Notification"in window)){$("reminderStatus").textContent="Notifications aren't supported by this browser context.";return;}const p=await Notification.requestPermission();$("reminderStatus").textContent=p==="granted"?"Alerts allowed. Keep the page running for prototype reminders.":"Alerts not enabled.";};
+function angle(a,b,c){const u=[a.x-b.x,a.y-b.y],v=[c.x-b.x,c.y-b.y],dot=u[0]*v[0]+u[1]*v[1],den=Math.hypot(...u)*Math.hypot(...v);return den?Math.acos(Math.max(-1,Math.min(1,dot/den)))*180/Math.PI:180;}
+const visible=p=>p&&(p.visibility===undefined||p.visibility>.5);
+async function getModel(){if(model)return model;$("status").textContent="Loading pose-detection model…";const vision=await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");model=await PoseLandmarker.createFromOptions(vision,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",delegate:"GPU"},runningMode:"VIDEO",numPoses:1});return model;}
+$("startBtn").onclick=async()=>{ $("startBtn").disabled=true;try{if(!navigator.mediaDevices?.getUserMedia)throw new Error("Camera access requires Safari and an HTTPS page.");await getModel();stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:"user",width:{ideal:640},height:{ideal:480}}});video.srcObject=stream;await video.play();$("cameraPanel").classList.remove("hidden");$("camtag").textContent="CAMERA LIVE";$("stopBtn").disabled=false;reps=0;earned=0;phase="up";lastRep=0;ui();$("status").textContent="Start in a side-on plank. Lower your chest, then press back up.";loop();}catch(e){$("cameraPanel").classList.remove("hidden");$("status").textContent="Camera/model could not start: "+e.message;$("startBtn").disabled=false;}};
+function loop(){if(!stream||video.readyState<2)return;if(canvas.width!==video.videoWidth||canvas.height!==video.videoHeight){canvas.width=video.videoWidth;canvas.height=video.videoHeight;}ctx.clearRect(0,0,canvas.width,canvas.height);try{const out=model.detectForVideo(video,performance.now());if(out.landmarks?.length){const p=out.landmarks[0],draw=new DrawingUtils(ctx);draw.drawConnectors(p,PoseLandmarker.POSE_CONNECTIONS,{color:"#c5ff4a",lineWidth:3});draw.drawLandmarks(p,{color:"#fff",fillColor:"#c5ff4a",lineWidth:1,radius:3});let best=null;for(const [s,e,w] of [[11,13,15],[12,14,16]]){if([p[s],p[e],p[w]].every(visible)){const score=(p[s].visibility||0)+(p[e].visibility||0)+(p[w].visibility||0);if(!best||score>best.score)best={s,e,w,score};}}if(best){const a=angle(p[best.s],p[best.e],p[best.w]);$("angle").textContent=Math.round(a)+"°";if(a<100&&phase==="up"){phase="down";$("status").textContent="Good — now push back up.";}if(a>155&&phase==="down"&&performance.now()-lastRep>550){phase="up";lastRep=performance.now();reps++;const old=earned;earned=Math.min(cfg.cap,earned+cfg.rate);balance+=earned-old;persist();ui();$("status").textContent=reps>=cfg.target?"Challenge complete — you earned "+earned+" minutes.":"Rep counted: "+reps+" / "+cfg.target+".";}$("phase").textContent=phase==="down"?"Lowered":"Top";}else $("status").textContent="Move back until your shoulder, elbow and wrist are visible."; }else $("status").textContent="No body pose detected. Improve lighting and show your side profile.";}catch(e){$("status").textContent="Pose detector issue: "+e.message;}raf=requestAnimationFrame(loop);}
+function stop(){cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}video.srcObject=null;ctx.clearRect(0,0,canvas.width,canvas.height);$("camtag").textContent="CAMERA OFF";$("stopBtn").disabled=true;$("startBtn").disabled=false;$("status").textContent="Camera stopped. Your reward balance is saved on this device.";}
+$("stopBtn").onclick=stop;document.addEventListener("visibilitychange",()=>{if(document.hidden)stop();});window.addEventListener("beforeunload",stop);
+setInterval(()=>{if(!cfg.reminders||Date.now()-lastReminder<cfg.interval*3600000)return;lastReminder=Date.now();if("Notification"in window&&Notification.permission==="granted")new Notification("REPLOCK challenge",{body:"Time for your push-up break. Complete your reps to earn minutes."});else $("reminderStatus").textContent="Your challenge reminder is due. Enable alerts and keep this page open.";},15000);
+loadSettings();
+</script>
+</body></html>

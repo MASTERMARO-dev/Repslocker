@@ -1,0 +1,9 @@
+{
+  "name": "REPLOCK \u2014 Earn Your Time",
+  "short_name": "REPLOCK",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b0d10",
+  "theme_color": "#0b0d10",
+  "description": "Camera-based push-up challenge and reward tracker."
+}
